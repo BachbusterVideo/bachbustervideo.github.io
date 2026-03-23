@@ -304,6 +304,34 @@ main { max-width: 1400px; margin: 0 auto; padding: 20px; }
   font-size: 0.65rem;
   color: var(--bb-silver);
 }
+/* Quick-add button on card */
+.quick-add {
+  position: absolute;
+  bottom: 10px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bb-yellow);
+  color: #000;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.quick-add:hover { transform: scale(1.15); }
+.tape.selected .quick-add {
+  background: #fff;
+  color: #000;
+}
 
 /* ── Detail modal ── */
 #overlay {
@@ -746,6 +774,25 @@ function makeCard(t) {
   info.appendChild(priceEl);
 
   div.appendChild(info);
+
+  // Quick-add button
+  var qbtn = document.createElement('button');
+  qbtn.className = 'quick-add';
+  qbtn.title = 'Add to my list';
+  qbtn.innerHTML = cart[t.title] ? '&#10003;' : '+';
+  qbtn.addEventListener('click', function(e) {
+    e.stopPropagation(); // don't open modal
+    if (cart[t.title]) {
+      delete cart[t.title];
+    } else {
+      cart[t.title] = t;
+    }
+    updateCartBar();
+    // Update this card in place
+    div.className = 'tape' + (cart[t.title] ? ' selected' : '');
+    qbtn.innerHTML = cart[t.title] ? '&#10003;' : '+';
+  });
+  div.appendChild(qbtn);
 
   div.addEventListener('click', function(e) {
     openModal(t);
